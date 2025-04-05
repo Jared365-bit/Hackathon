@@ -4,11 +4,12 @@ code .
 
 node -v
 npm -v  
+npm - v 
+ext install npm script runner.
 
-npm init -y 
-
+npminit -y 
 npm install phaser 
- 
+ ,l
 
 const config = {
     type: Phaser.AUTO,
@@ -33,4 +34,3 @@ const config = {
   }
   
   function update() {}
-

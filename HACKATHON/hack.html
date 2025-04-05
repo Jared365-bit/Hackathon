@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bubble Pop Game</title>
+  <script src="https://unpkg.com/kaboom/dist/kaboom.js"></script>
+</head>
+<body>
+<script>
+kaboom({
+  background: [45, 30, 80],
+  width: 800,
+  height: 600,
+  scale: 1,
+  debug: false,
+  crisp: true
+});
+
+loadSound("pop", "https://kaboomjs.com/sounds/score.mp3");
+loadSound("music", "https://kaboomjs.com/sounds/powerup.mp3");
+
+const COLORS = [
+  [255, 87, 87],
+  [255, 190, 61],
+  [80, 220, 100],
+  [66, 176, 245],
+  [255, 102, 196],
+  [155, 89, 255]
+];
+
+function spawnParticles(p, color) {
+  for (let i = 0; i < 15; i++) {
+    add([
+      pos(p),
+      rect(rand(3, 7), rand(3, 7)),
+      color,
+      lifespan(rand(0.3, 0.6)),
+      move(rand(0, 360), rand(60, 180)),
+      scale(1, 0.1),
+      rotate(rand(0, 360)),
+      area(),
+      "particle"
+    ]);
+  }
+}
+
+function createBackground() {
+  add([
+    rect(width(), height()),
+    color(45, 30, 80),
+    z(-10),
+    fixed()
+  ]);
+
+  for (let i = 0; i < 8; i++) {
+    const size = rand(100, 300);
+    const speed = rand(20, 60);
+    const hue = rand(0, 360);
+
+    add([
+      pos(rand(0, width()), rand(0, height())),
+      circle(size),
+      color(hue, 80, 70),
+      opacity(0.2),
+      z(-5),
+      fixed(),
+      {
+        dir: vec2(rand(-1, 1), rand(-1, 1)).unit(),
+        update() {
+          this.pos.x += this.dir.x * speed * dt();
+          this.pos.y += this.dir.y * speed * dt();
+          if (this.pos.x < 0 || this.pos.x > width()) this.dir.x *= -1;
+          if (this.pos.y < 0 || this.pos.y > height()) this.dir.y *= -1;
+        }
+      }
+    ]);
+  }
+
+  loop(0.2, () => {
+    add([
+      pos(rand(0, width()), rand(0, height())),
+      rect(rand(1, 3), rand(1, 3)),
+      color(255, 255, 255),
+      opacity(rand(0.3, 0.7)),
+      lifespan(rand(0.3, 1.0)),
+      z(-2),
+      fixed(),
+      { timer: rand(0.3, 1.0) },
+      "sparkle"
+    ]);
+  });
+}
+
+scene("game", () => {
+  let score = 0;
+  let timeLeft = 60;
+  let isGameOver = false;
+
+  createBackground();
+  const music = play("music", { volume: 0.3, loop: true });
+
+  const scoreLabel = add([
+    text("Score: 0", { size: 24 }),
+    pos(30, 35),
+    fixed(),
+    z(101)
+  ]);
+
+  add([
+    rect(150, 60, { radius: 12 }),
+    pos(20, 20),
+    color(0, 0, 0),
+    opacity(0.7),
+    fixed(),
+    z(100)
+  ]);
+
+  const timerLabel = add([
+    text("Time: 60", { size: 24 }),
+    pos(width() - 160, 35),
+    fixed(),
+    z(101)
+  ]);
+
+  const timerBar = add([
+    rect(120, 10, { radius: 4 }),
+    pos(width() - 155, 60),
+    color(255, 255, 255),
+    fixed(),
+    z(101)
+  ]);
+
+  add([
+    rect(150, 60, { radius: 12 }),
+    pos(width() - 170, 20),
+    color(0, 0, 0),
+    opacity(0.7),
+    fixed(),
+    z(100)
+  ]);
+
+  function spawnBubble() {
+    if (isGameOver) return;
+
+    const colorIndex = ~~rand(0, COLORS.length);
+    const bubbleSize = rand(30, 60);
+    const speed = map(bubbleSize, 30, 60, 380, 200);
+    const bubbleColor = COLORS[colorIndex];
+
+    const bubble = add([
+      pos(rand(50, width() - 50), height() + bubbleSize),
+      circle(bubbleSize),
+      area(),
+      color(bubbleColor),
+      outline(2, color(255, 255, 255, 0.8)), // Fixed the color transparency
+      move(270, speed),
+      opacity(0.9),
+      z(10),
+      {
+        value: ~~map(bubbleSize, 30, 60, 10, 5),
+        growing: false,
+        baseSize: bubbleSize,
+        colorVal: bubbleColor
+      },
+      "bubble"
+    ]);
+
+    bubble.onUpdate(() => {
+      bubble.pos.x += Math.sin(time() * 2 + bubble.pos.y * 0.05) * 0.7;
+      if (bubble.pos.y < -bubble.baseSize) destroy(bubble);
+      if (bubble.growing) bubble.radius = wave(bubble.baseSize, bubble.baseSize * 1.1, time() * 6);
+    });
+
+    bubble.onHover(() => bubble.growing = true);
+    bubble.onHoverEnd(() => bubble.growing = false);
+
+    bubble.onClick(() => {
+      play("pop", { volume: 0.3, detune: rand(-300, 300) });
+      score += bubble.value;
+      scoreLabel.text = "Score: " + score;
+      spawnParticles(bubble.pos, bubble.colorVal);
+      destroy(bubble);
+    });
+  }
+
+  onUpdate(() => {
+    if (isGameOver) return;
+
+    timeLeft -= dt();
+    timerLabel.text = "Time: " + Math.ceil(timeLeft);
+    timerBar.width = 120 * (timeLeft / 60);
+
+    if (timeLeft < 10) timerBar.color = rgb(255, 50, 50);
+    else if (timeLeft < 30) timerBar.color = rgb(255, 165, 0);
+
+    if (timeLeft <= 0) {
+      isGameOver = true;
+      go("gameOver", score);
+    }
+  });
+
+  loop(0.5, () => {
+    if (!isGameOver) spawnBubble();
+  });
+});
+
+scene("gameOver", (score) => {
+  createBackground();
+
+  add([
+    rect(400, 300, { radius: 16 }),
+    pos(center()),
+    color(0, 0, 0),
+    opacity(0.8),
+    { origin: "center" },
+    z(90)
+  ]);
+
+  add([
+    text("Game Over!", { size: 48 }),
+    pos(center().x, center().y - 80),
+    color(255, 255, 255),
+    { origin: "center" },
+    z(100)
+  ]);
+
+  add([
+    text("Final Score: " + score, { size: 36 }),
+    pos(center()),
+    color(255, 190, 61),
+    { origin: "center" },
+    z(100)
+  ]);
+
+  const playBtn = add([
+    rect(200, 60, { radius: 8 }),
+    pos(center().x, center().y + 80),
+    color(80, 220, 100),
+    outline(4, color(255, 255, 255, 0.8)), // Fixed the color transparency
+    { origin: "center" },
+    area(),
+    scale(1),
+    z(100),
+    "button"
+  ]);
+
+  add([
+    text("Play Again", { size: 24 }),
+    pos(center().x, center().y + 80),
+    { origin: "center" },
+    color(0, 0, 0),
+    z(101)
+  ]);
+
+  playBtn.onHover(() => {
+    playBtn.scale = vec2(1.05);
+    playBtn.color = rgb(100, 240, 120);
+  });
+
+  playBtn.onHoverEnd(() => {
+    playBtn.scale = vec2(1);
+    playBtn.color = rgb(80, 220, 100);
+  });
+
+  playBtn.onClick(() => go("game"));
+
+  loop(0.2, () => {
+    const p = vec2(rand(0, width()), rand(0, height()));
+    const c = COLORS[~~rand(0, COLORS.length)];
+
+    add([
+      pos(p),
+      circle(rand(5, 15)),
+      color(c),
+      lifespan(rand(0.5, 2)),
+      move(rand(0, 360), rand(20, 60)),
+      scale(1, 0.1),
+      opacity(0.5),
+      z(50)
+    ]);
+  });
+});
+
+scene("start", () => {
+  createBackground();
+
+  add([
+    rect(500, 400, { radius: 16 }),
+    pos(center()),
+    color(0, 0, 0),
+    opacity(0.8),
+    { origin: "center" },
+    z(90)
+  ]);
+
+  add([
+    text("Bubble Pop", { size: 64 }),
+    pos(center().x, center().y - 120),
+    color(255, 102, 196),
+    { origin: "center" },
+    z(100)
+  ]);
+
+  add([
+    text("A Colorful Adventure", { size: 24 }),
+    pos(center().x, center().y - 60),
+    color(155, 89, 255),
+    { origin: "center" },
+    z(100)
+  ]);
+
+  add([
+    text("Click bubbles to pop them\nGet as many points as you can\nbefore time runs out!",
+      { size: 24, align: "center" }),
+    pos(center()),
+    color(255, 255, 255),
+    { origin: "center" },
+    z(100)
+  ]);
+
+  const startBtn = add([
+    rect(200, 60, { radius: 8 }),
+    pos(center().x, center().y + 100),
+    color(66, 176, 245),
+    outline(4, color(255, 255, 255, 0.8)), // Fixed the color transparency
+    { origin: "center" },
+    area(),
+    scale(1),
+    z(100),
+    "button"
+  ]);
+
+  add([
+    text("Start Game", { size: 24 }),
+    pos(center().x, center().y + 100),
+    { origin: "center" },
+    color(0, 0, 0),
+    z(101)
+  ]);
+
+  startBtn.onHover(() => {
+    startBtn.scale = vec2(1.05);
+    startBtn.color = rgb(86, 196, 255);
+  });
+
+  startBtn.onHoverEnd(() => {
+    startBtn.scale = vec2(1);
+    startBtn.color = rgb(66, 176, 245);
+  });
+
+  startBtn.onClick(() => go("game"));
+});
+
+go("start");
+</script>
+</body>
+</html>
+
