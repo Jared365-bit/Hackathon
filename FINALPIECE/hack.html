@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bubble Pop Game</title>
+  <title>Green Bubble Pop Game</title>
   <script src="https://unpkg.com/kaboom/dist/kaboom.js"></script>
   
   <style>
@@ -11,15 +11,17 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* Prevents scrollbars */
+      width: 100%;
+      overflow: hidden;
+      background-color: #143d23; /* Dark green background */
     }
 
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100% !important;
+      height: 100% !important;
       display: block;
     }
   </style>
@@ -27,24 +29,27 @@
 <body>
 <script>
 kaboom({
-  background: [45, 30, 80],
-  width: 800,
-  height: 600,
+  background: [20, 61, 35], // Dark green background
+  width: window.innerWidth,
+  height: window.innerHeight,
   scale: 1,
   debug: false,
-  crisp: true
+  crisp: true,
+  fullscreen: true,
+  touchToMouse: true
 });
 
 loadSound("pop", "https://kaboomjs.com/sounds/score.mp3");
 loadSound("music", "https://kaboomjs.com/sounds/powerup.mp3");
 
+// Green color palette
 const COLORS = [
-  [255, 87, 87],
-  [255, 190, 61],
-  [80, 220, 100],
-  [66, 176, 245],
-  [255, 102, 196],
-  [155, 89, 255]
+  [76, 187, 23],    // Light green
+  [20, 160, 46],    // Medium green
+  [18, 107, 41],    // Dark green
+  [173, 232, 162],  // Pale green
+  [0, 70, 25],      // Deep green
+  [132, 222, 151]   // Mint green
 ];
 
 function spawnParticles(p, color) {
@@ -66,7 +71,7 @@ function spawnParticles(p, color) {
 function createBackground() {
   add([
     rect(width(), height()),
-    color(45, 30, 80),
+    color(20, 61, 35), // Dark green background
     z(-10),
     fixed()
   ]);
@@ -74,7 +79,8 @@ function createBackground() {
   for (let i = 0; i < 8; i++) {
     const size = rand(100, 300);
     const speed = rand(20, 60);
-    const hue = rand(0, 360);
+    // Green hues (90-150 in HSL)
+    const hue = rand(90, 150);
 
     add([
       pos(rand(0, width()), rand(0, height())),
@@ -99,7 +105,7 @@ function createBackground() {
     add([
       pos(rand(0, width()), rand(0, height())),
       rect(rand(1, 3), rand(1, 3)),
-      color(255, 255, 255),
+      color(173, 255, 162), // Light green sparkles
       opacity(rand(0.3, 0.7)),
       lifespan(rand(0.3, 1.0)),
       z(-2),
@@ -144,7 +150,7 @@ scene("game", () => {
   const timerBar = add([
     rect(120, 10, { radius: 4 }),
     pos(width() - 155, 60),
-    color(255, 255, 255),
+    color(132, 222, 151), // Mint green timer
     fixed(),
     z(101)
   ]);
@@ -171,7 +177,7 @@ scene("game", () => {
       circle(bubbleSize),
       area(),
       color(bubbleColor),
-      outline(2, color(255, 255, 255, 0.8)), // Fixed the color transparency
+      outline(2, color(255, 255, 255, 0.8)),
       move(270, speed),
       opacity(0.9),
       z(10),
@@ -246,7 +252,7 @@ scene("gameOver", (score) => {
   add([
     text("Final Score: " + score, { size: 36 }),
     pos(center()),
-    color(255, 190, 61),
+    color(173, 232, 162), // Pale green
     { origin: "center" },
     z(100)
   ]);
@@ -254,8 +260,8 @@ scene("gameOver", (score) => {
   const playBtn = add([
     rect(200, 60, { radius: 8 }),
     pos(center().x, center().y + 80),
-    color(80, 220, 100),
-    outline(4, color(255, 255, 255, 0.8)), // Fixed the color transparency
+    color(20, 160, 46), // Medium green
+    outline(4, color(255, 255, 255, 0.8)),
     { origin: "center" },
     area(),
     scale(1),
@@ -273,12 +279,12 @@ scene("gameOver", (score) => {
 
   playBtn.onHover(() => {
     playBtn.scale = vec2(1.05);
-    playBtn.color = rgb(100, 240, 120);
+    playBtn.color = rgb(76, 187, 23); // Light green on hover
   });
 
   playBtn.onHoverEnd(() => {
     playBtn.scale = vec2(1);
-    playBtn.color = rgb(80, 220, 100);
+    playBtn.color = rgb(20, 160, 46); // Back to medium green
   });
 
   playBtn.onClick(() => go("game"));
@@ -315,15 +321,15 @@ scene("start", () => {
   add([
     text("Bubble Pop", { size: 64 }),
     pos(center().x, center().y - 120),
-    color(255, 102, 196),
+    color(132, 222, 151), // Mint green
     { origin: "center" },
     z(100)
   ]);
 
   add([
-    text("A Colorful Adventure", { size: 24 }),
+    text("A Green Adventure", { size: 24 }),
     pos(center().x, center().y - 60),
-    color(155, 89, 255),
+    color(173, 232, 162), // Pale green
     { origin: "center" },
     z(100)
   ]);
@@ -340,8 +346,8 @@ scene("start", () => {
   const startBtn = add([
     rect(200, 60, { radius: 8 }),
     pos(center().x, center().y + 100),
-    color(66, 176, 245),
-    outline(4, color(255, 255, 255, 0.8)), // Fixed the color transparency
+    color(20, 160, 46), // Medium green
+    outline(4, color(255, 255, 255, 0.8)),
     { origin: "center" },
     area(),
     scale(1),
@@ -359,15 +365,24 @@ scene("start", () => {
 
   startBtn.onHover(() => {
     startBtn.scale = vec2(1.05);
-    startBtn.color = rgb(86, 196, 255);
+    startBtn.color = rgb(76, 187, 23); // Light green on hover
   });
 
   startBtn.onHoverEnd(() => {
     startBtn.scale = vec2(1);
-    startBtn.color = rgb(66, 176, 245);
+    startBtn.color = rgb(20, 160, 46); // Back to medium green
   });
 
   startBtn.onClick(() => go("game"));
+});
+
+// Handle window resizing
+window.addEventListener("resize", () => {
+  const canvas = document.querySelector("canvas");
+  if (canvas) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
 });
 
 go("start");
