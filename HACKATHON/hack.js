@@ -414,6 +414,19 @@ kaboom({
 	})
   })
   
+
   // Start with the start screen
   go("start")
   
+  document.addEventListener("DOMContentLoaded", () => {
+	// Select the button by its ID
+	const breakBtn = document.getElementById("takeABreakBtn");
+	
+	// Add a click event listener to the button
+	breakBtn.addEventListener("click", () => {
+	  // Action when button is clicked - here, a simple alert for the break
+	  alert("Time to take a break! 😌");
+	  
+	  // You can add other behaviors here, like pausing a game, showing a break screen, etc.
+	});
+  });

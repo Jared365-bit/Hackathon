@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Greenlight Crystals of Paidenia</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> 
   <style>
     html, body {
       height: 100%;
@@ -20,6 +20,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
     }
     .main-container {
       max-width: 800px;
@@ -81,6 +82,34 @@
     .btn-hint:hover {
       background-color: #fbbf24;
     }
+    /* New styles for crystals and shatter animation */
+    .crystal {
+      width: 50px;
+      transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    }
+    .shatter {
+      transform: rotate(45deg) scale(0);
+      opacity: 0;
+    }
+    #crystalContainer {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    /* New: "Take a Break!" button styling */
+    #takeABreakBtn {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background-color: #66B2B2;
+      /* Inherit font, padding, and text color from .btn */
+      z-index: 1000;
+      transition: background-color 0.2s;
+    }
+    #takeABreakBtn:hover {
+      background-color: #55A3A3;
+    }
   </style>
 </head>
 <body>
@@ -120,54 +149,308 @@
         <p class="text-xl font-bold">Score: <span id="score">0</span></p>
       </div>
     </div>
+    
+    <!-- Crystal container -->
+    <div id="crystalContainer">
+      <img src="/HACKATHON/Assets/crystal.png" class="crystal" id="crystal1">
+      <img src="/HACKATHON/Assets/crystal.png" class="crystal" id="crystal2">
+      <img src="/HACKATHON/Assets/crystal.png" class="crystal" id="crystal3">
+    </div>
   </div>
 
+  <!-- "Take a Break!" button using the same .btn styling -->
+  <button id="takeABreakBtn" class="btn">Take a Break!</button>
+  <script src="/HACKATHON/hack.js" defer></script>
   <canvas id="confettiCanvas" class="confetti"></canvas>
 
-  <!-- Crystals added near the bottom -->
-  <img src="/HACKATHON/Assets/crystal.png" id="crystal1" class="sprite" style="bottom: 10%; left: 10%;">
-  <img src="/HACKATHON/Assets/crystal.png" id="crystal2" class="sprite" style="bottom: 10%; left: 45%;">
-  <img src="/HACKATHON/Assets/crystal.png" id="crystal3" class="sprite" style="bottom: 10%; left: 80%;">
+  <img src="/HACKATHON/Assets/crystal.png" class="sprite" style="top: 10%; left: 5%;">
+  <img src="/HACKATHON/Assets/crystal.png" class="sprite" style="top: 60%; right: 5%;">
 
   <script>
-    let crystalsRemaining = 3;
-    let bestScore = 0;
-    let score = 0;
-
     const questions = [
-      // Your existing questions here...
+      // Elementary Science - 10 questions
+      { grade: 'elementary', type: 'science', question: 'What gas do plants breathe in to make food?', answer: 'carbon dioxide', altAnswers: ['co2'], hint: 'It starts with C and is in the air.' },
+      { grade: 'elementary', type: 'science', question: 'What is the process by which plants make food?', answer: 'photosynthesis', altAnswers: ['photo synthesis'], hint: 'It involves sunlight.' },
+      { grade: 'elementary', type: 'science', question: 'What is the largest planet in our solar system?', answer: 'jupiter', hint: 'It starts with J and is a gas giant.' },
+      { grade: 'elementary', type: 'science', question: 'What is the closest planet to the Sun?', answer: 'mercury', hint: 'It is the smallest planet.' },
+      { grade: 'elementary', type: 'science', question: 'What is the chemical symbol for water?', answer: 'h2o', hint: 'Two hydrogen, one oxygen.' },
+      { grade: 'elementary', type: 'science', question: 'What gas do humans breathe out?', answer: 'carbon dioxide', hint: 'It\'s what plants need.' },
+      { grade: 'elementary', type: 'science', question: 'What is the Earth\'s largest ocean?', answer: 'pacific', hint: 'It starts with P and means peaceful.' },
+      { grade: 'elementary', type: 'science', question: 'What do you call animals that eat only plants?', answer: 'herbivores', hint: 'Herb means plant.' },
+      { grade: 'elementary', type: 'science', question: 'How many legs does a spider have?', answer: '8', hint: 'It\'s an even number.' },
+      { grade: 'elementary', type: 'science', question: 'What is the center of our solar system?', answer: 'sun', hint: 'It gives us light and heat.' },
+      
+      // Elementary Math - 10 questions
+      { grade: 'elementary', type: 'math', question: 'What is 7 + 8?', answer: '15', altAnswers: ['fifteen'], hint: 'It is greater than 10, less than 20.' },
+      { grade: 'elementary', type: 'math', question: 'Write the number: twelve', answer: '12', altAnswers: ['twelve'], hint: 'It comes after 11.' },
+      { grade: 'elementary', type: 'math', question: 'What is 9 * 6?', answer: '54', altAnswers: ['fifty-four', 'fifty four'], hint: 'It is a multiple of 9.' },
+      { grade: 'elementary', type: 'math', question: 'What is 15 ÷ 3?', answer: '5', altAnswers: ['five'], hint: 'It is a small number.' },
+      { grade: 'elementary', type: 'math', question: 'What is 20 - 4?', answer: '16', altAnswers: ['sixteen'], hint: 'It is a small number.' },
+      { grade: 'elementary', type: 'math', question: 'What is 5 + 7?', answer: '12', altAnswers: ['twelve', 'dozen'], hint: 'It\'s a dozen.' },
+      { grade: 'elementary', type: 'math', question: 'What is 4 * 3?', answer: '12', altAnswers: ['twelve'], hint: 'Count by 4 three times.' },
+      { grade: 'elementary', type: 'math', question: 'What is 18 ÷ 2?', answer: '9', altAnswers: ['nine'], hint: 'Half of 18.' },
+      { grade: 'elementary', type: 'math', question: 'What is 10 - 7?', answer: '3', altAnswers: ['three'], hint: 'It\'s a small number.' },
+      { grade: 'elementary', type: 'math', question: 'How many sides does a triangle have?', answer: '3', altAnswers: ['three'], hint: 'It\'s in the name: tri-angle.' },
+      
+      // Elementary Spelling - 10 questions
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "accomodation"', answer: 'accommodation', hint: 'Two C\'s and two M\'s.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "definately"', answer: 'definitely', hint: 'It has a "I" after "N".' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "seperated"', answer: 'separated', hint: 'The "A" and "E" should be together.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "occurence"', answer: 'occurrence', hint: 'Two "C"s and two "R"s.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "recieve"', answer: 'receive', hint: 'It is "I before E" except after C.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "beleive"', answer: 'believe', hint: 'It follows the "i before e except after c" rule.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "freind"', answer: 'friend', hint: 'The "I" and "E" are in the wrong order.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "libary"', answer: 'library', hint: 'There are two "r" sounds.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "tommorow"', answer: 'tomorrow', hint: 'One "M", two "R"s.' },
+      { grade: 'elementary', type: 'spelling', question: 'Type the correct spelling: "surprize"', answer: 'surprise', hint: 'It has an "S" not a "Z".' },
+      
+      // Middle School Science - 10 questions
+      { grade: 'middle', type: 'science', question: 'What is the most common gas in Earth\'s atmosphere?', answer: 'nitrogen', hint: 'It is the majority gas.' },
+      { grade: 'middle', type: 'science', question: 'What is the atomic number of carbon?', answer: '6', hint: 'It is a key element in life.' },
+      { grade: 'middle', type: 'science', question: 'What is the boiling point of water in Celsius?', answer: '100', hint: 'It\'s the temperature at which water boils.' },
+      { grade: 'middle', type: 'science', question: 'What is the hardest natural substance on Earth?', answer: 'diamond', hint: 'It\'s used in jewelry.' },
+      { grade: 'middle', type: 'science', question: 'What planet is known as the Red Planet?', answer: 'mars', hint: 'It is a terrestrial planet.' },
+      { grade: 'middle', type: 'science', question: 'What do you call the process where a liquid turns into a gas?', answer: 'evaporation', hint: 'It happens when water is heated.' },
+      { grade: 'middle', type: 'science', question: 'What is the smallest unit of matter?', answer: 'atom', hint: 'It comes from a Greek word meaning "indivisible".' },
+      { grade: 'middle', type: 'science', question: 'What is the name of the force that pulls objects toward Earth?', answer: 'gravity', hint: 'It keeps us on the ground.' },
+      { grade: 'middle', type: 'science', question: 'What type of energy is stored in chemical bonds?', answer: 'chemical energy', hint: 'It\'s released during chemical reactions.' },
+      { grade: 'middle', type: 'science', question: 'What tissue connects muscles to bones?', answer: 'tendons', hint: 'Not to be confused with ligaments.' },
+      
+      // Middle School Math - 10 questions
+      { grade: 'middle', type: 'math', question: 'What is 15 * 9?', answer: '135', altAnswers: ['one hundred thirty-five', 'one hundred and thirty-five'], hint: 'It is a three-digit number.' },
+      { grade: 'middle', type: 'math', question: 'What is 72 ÷ 8?', answer: '9', altAnswers: ['nine'], hint: 'It\'s the square root of 81.' },
+      { grade: 'middle', type: 'math', question: 'What is 25 + 47?', answer: '72', altAnswers: ['seventy-two'], hint: 'It\'s close to 75.' },
+      { grade: 'middle', type: 'math', question: 'What is 56 - 19?', answer: '37', altAnswers: ['thirty-seven'], hint: 'It\'s between 30 and 40.' },
+      { grade: 'middle', type: 'math', question: 'What is 8 * 7?', answer: '56', altAnswers: ['fifty-six'], hint: 'It\'s the product of 8 and 7.' },
+      { grade: 'middle', type: 'math', question: 'What is the square root of 144?', answer: '12', altAnswers: ['twelve'], hint: 'It\'s a dozen.' },
+      { grade: 'middle', type: 'math', question: 'What is 17 + 23?', answer: '40', altAnswers: ['forty'], hint: 'It\'s a round number.' },
+      { grade: 'middle', type: 'math', question: 'What is 3 to the power of 4?', answer: '81', altAnswers: ['eighty-one'], hint: 'Multiply 3 by itself 4 times.' },
+      { grade: 'middle', type: 'math', question: 'What is 1/4 as a decimal?', answer: '0.25', altAnswers: ['0.25'], hint: 'It\'s a quarter.' },
+      { grade: 'middle', type: 'math', question: 'What is the value of π (pi) rounded to two decimals?', answer: '3.14', altAnswers: ['3.14'], hint: 'It\'s used to calculate circle properties.' },
+      
+      // Middle School Spelling - 10 questions
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "necessary"', answer: 'necessary', hint: 'It has one "C" and two "S"s.' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "conscious"', answer: 'conscious', hint: 'It has "SC" in the middle.' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "priviledge"', answer: 'privilege', hint: 'It has "I" after "V".' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "definitely"', answer: 'definitely', hint: 'It has "I" after "N".' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "embarrassment"', answer: 'embarrassment', hint: 'Two R\'s and two S\'s.' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "begining"', answer: 'beginning', hint: 'Double the "N" before adding "-ing".' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "arguement"', answer: 'argument', hint: 'No "E" after "U".' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "wierd"', answer: 'weird', hint: '"I" and "E" are switched.' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "independant"', answer: 'independent', hint: 'It has "E" not "A" before "NT".' },
+      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "pronounciation"', answer: 'pronunciation', hint: 'No "O" after "N".' },
+      
+      // High School Science - 10 questions
+      { grade: 'high', type: 'science', question: 'What is the chemical formula for methane?', answer: 'ch4', hint: 'It\'s a simple hydrocarbon.' },
+      { grade: 'high', type: 'science', question: 'What is the atomic number of oxygen?', answer: '8', hint: 'It\'s a vital element for respiration.' },
+      { grade: 'high', type: 'science', question: 'What is the most abundant element in the Earth\'s crust?', answer: 'oxygen', hint: 'It is also vital for life.' },
+      { grade: 'high', type: 'science', question: 'What is the chemical formula for sodium chloride?', answer: 'nacl', hint: 'It\'s commonly known as table salt.' },
+      { grade: 'high', type: 'science', question: 'What is the most common state of matter in the universe?', answer: 'plasma', hint: 'It\'s found in stars.' },
+      { grade: 'high', type: 'science', question: 'Which subatomic particle has a positive charge?', answer: 'proton', hint: 'It\'s found in the nucleus.' },
+      { grade: 'high', type: 'science', question: 'What is the pH of pure water?', answer: '7', hint: 'It\'s considered neutral.' },
+      { grade: 'high', type: 'science', question: 'What is the process of nuclear fusion primarily involving?', answer: 'hydrogen', hint: 'It powers the sun.' },
+      { grade: 'high', type: 'science', question: 'Which type of electromagnetic radiation has the highest frequency?', answer: 'gamma rays', hint: 'They have the shortest wavelength.' },
+      { grade: 'high', type: 'science', question: 'What is the phenomenon where light changes direction when passing from one medium to another?', answer: 'refraction', hint: 'It explains why straws appear bent in water.' },
+      
+      // High School Math - 10 questions
+      { grade: 'high', type: 'math', question: 'What is the derivative of x^2?', answer: '2x', altAnswers: ['2x'], hint: 'Use basic differentiation rules.' },
+      { grade: 'high', type: 'math', question: 'What is the integral of x?', answer: 'x^2/2', altAnswers: ['1/2 x^2', 'x^2/2'], hint: 'It\'s a simple power rule integral.' },
+      { grade: 'high', type: 'math', question: 'What is the value of pi up to two decimal places?', answer: '3.14', altAnswers: ['3.14'], hint: 'It\'s a famous mathematical constant.' },
+      { grade: 'high', type: 'math', question: 'What is 5^3?', answer: '125', altAnswers: ['one hundred twenty-five'], hint: 'It\'s the cube of 5.' },
+      { grade: 'high', type: 'math', question: 'What is the solution to the equation x + 5 = 10?', answer: '5', altAnswers: ['five'], hint: 'It\'s a simple linear equation.' },
+      { grade: 'high', type: 'math', question: 'What is the sine of 30 degrees?', answer: '0.5', altAnswers: ['0.5', 'one half'], hint: 'It\'s a fraction with denominator 2.' },
+      { grade: 'high', type: 'math', question: 'What is the quadratic formula?', answer: 'x = (-b ± √(b^2-4ac))/(2a)', altAnswers: ['(-b ± √(b^2-4ac))/(2a)'], hint: 'It solves ax^2 + bx + c = 0.' },
+      { grade: 'high', type: 'math', question: 'What is the cosine of 60 degrees?', answer: '0.5', altAnswers: ['0.5', 'one half'], hint: 'It\'s the same as sine of 30 degrees.' },
+      { grade: 'high', type: 'math', question: 'What is log10(100)?', answer: '2', altAnswers: ['2', 'two'], hint: '10 to what power equals 100?' },
+      { grade: 'high', type: 'math', question: 'What is the slope of a line perpendicular to y = 3x + 2?', answer: '-1/3', altAnswers: ['-1/3', 'negative one third'], hint: 'Perpendicular slopes are negative reciprocals.' },
+      
+      // High School Spelling - 10 questions
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "definitly"', answer: 'definitely', hint: 'It has two "I"s.' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "occurence"', answer: 'occurrence', hint: 'Two "C"s and two "R"s.' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "aggressive"', answer: 'aggressive', hint: 'It has two "G"s.' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "seperated"', answer: 'separated', hint: 'There is only one "E".' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "recieve"', answer: 'receive', hint: 'It\'s "I before E" except after C.' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "mischievous"', answer: 'mischievous', hint: 'No extra "I" before the "O".' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "concensus"', answer: 'consensus', hint: 'It has "S" not "C" after "N".' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "restaraunt"', answer: 'restaurant', hint: 'It has "AU" not "AR".' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "committe"', answer: 'committee', hint: 'It ends with double "E".' },
+      { grade: 'high', type: 'spelling', question: 'Type the correct spelling: "sence"', answer: 'sense', hint: 'It has an "S" not a "C".' }
     ];
 
-    function submitAnswer() {
-      const userAnswer = document.getElementById("answerInput").value.toLowerCase();
-      const correctAnswer = questions[0].answer.toLowerCase();  // Adjust logic for the current question
-      if (userAnswer === correctAnswer) {
-        score++;
-        document.getElementById("score").innerText = score;
-        // Move to next question or add correct answer logic here
-      } else {
-        if (crystalsRemaining > 0) {
-          document.getElementById(`crystal${crystalsRemaining}`).src = "/HACKATHON/Assets/crystal-broken.png";  // Assuming you have a broken crystal image
-          crystalsRemaining--;
-        }
-        if (crystalsRemaining === 0) {
-          alert(`Game Over! Your best score: ${bestScore}`);
-          // Reset or end game logic here
-        }
+    let currentQuestion = {};
+    let score = 0;
+    let bestScore = 0;
+    let crystalLives = 3;
+    let crystalsShattered = 0;
+    let questionCount = 0; // New counter for questions answered
+
+    document.getElementById('gradeLevel').addEventListener('change', loadQuestion);
+    document.getElementById('subjectCategory').addEventListener('change', loadQuestion);
+    
+    // Add enter key listener for the answer input
+    document.getElementById('answerInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitAnswer();
       }
+    });
+
+    function loadQuestion() {
+      const grade = document.getElementById('gradeLevel').value;
+      const subject = document.getElementById('subjectCategory').value;
+
+      let filtered = questions;
+      if (grade !== 'all') {
+        filtered = filtered.filter(q => q.grade === grade);
+      }
+      if (subject !== 'all') {
+        filtered = filtered.filter(q => q.type === subject);
+      }
+
+      if (filtered.length === 0) {
+        document.getElementById('question').innerText = 'No questions available for this selection.';
+        return;
+      }
+
+      currentQuestion = filtered[Math.floor(Math.random() * filtered.length)];
+      document.getElementById('question').innerText = currentQuestion.question;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
     }
 
     function showHint() {
-      alert(questions[0].hint);  // Adjust to show the hint for the current question
+      alert(currentQuestion.hint);
     }
 
-    // Logic to save the best score and handle more game functionalities
-    function updateBestScore() {
+    function submitAnswer() {
+      const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+      // Check against main answer or any extra acceptable answers (if provided)
+      if (
+        userAnswer === currentQuestion.answer.toLowerCase() ||
+        (currentQuestion.altAnswers && currentQuestion.altAnswers.map(a => a.toLowerCase()).includes(userAnswer))
+      ) {
+        score++;
+        document.getElementById('score').innerText = score;
+        questionCount++;
+        confettiBurst();
+        // If 10 questions have been answered, ask if the user wants to continue
+        if (questionCount >= 10) {
+          if(confirm("You've answered 10 questions. Do you want to continue?")) {
+            questionCount = 0; // Only reset question count, not score
+            loadQuestion();
+          } else {
+            gameOver();
+          }
+        } else {
+          loadQuestion();
+        }
+      } else {
+        wrongAnswer();
+      }
+    }
+
+    function wrongAnswer() {
+      // Shatter the next available crystal
+      if (crystalsShattered < 3) {
+        const crystalElem = document.getElementById('crystal' + (crystalsShattered + 1));
+        crystalElem.classList.add('shatter');
+        crystalsShattered++;
+        crystalLives = 3 - crystalsShattered;
+      }
+      if (crystalLives <= 0) {
+        // Wait for last crystal to fade away (600ms) before showing game over prompt
+        setTimeout(gameOver, 600);
+      } else {
+        alert('Not quite right. Try again!');
+      }
+    }
+
+    function gameOver() {
+      prompt("Game Over! Your score: " + score + "\nBest Score: " + (score > bestScore ? score : bestScore) + "\nPress OK to restart.");
       if (score > bestScore) {
         bestScore = score;
       }
+      // Reset score, question count, and crystals for a new game
+      score = 0;
+      questionCount = 0;
+      document.getElementById('score').innerText = score;
+      resetCrystals();
+      loadQuestion();
     }
+
+    function resetCrystals() {
+      crystalsShattered = 0;
+      crystalLives = 3;
+      for (let i = 1; i <= 3; i++) {
+        const crystalElem = document.getElementById('crystal' + i);
+        crystalElem.classList.remove('shatter');
+      }
+    }
+
+    function confettiBurst() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let confetti = [];
+      const maxHeight = window.innerHeight / 2;
+      
+      for (let i = 0; i < 100; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 50,
+          size: Math.random() * 5 + 3,
+          color: `hsl(${Math.random() * 120 + 80}, 100%, 70%)`,
+          speed: Math.random() * 3 + 2,
+          opacity: 1,
+          maxY: Math.random() * maxHeight
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let active = false;
+        
+        confetti.forEach(particle => {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+          ctx.fillStyle = particle.color;
+          ctx.globalAlpha = particle.opacity;
+          ctx.fill();
+          
+          particle.y += particle.speed;
+          particle.x += Math.sin(particle.y * 0.03) * 1.5;
+          
+          if (particle.y >= particle.maxY) {
+            particle.opacity -= 0.05;
+            if(particle.opacity < 0) {
+              particle.opacity = 0;
+            }
+          }
+          
+          if (particle.opacity > 0) {
+            active = true;
+          }
+        });
+        
+        if (active) {
+          requestAnimationFrame(animate);
+        }
+      }
+      
+      animate();
+    }
+
+    loadQuestion();
+    
+    window.addEventListener('resize', function() {
+      const canvas = document.getElementById('confettiCanvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
+
 
