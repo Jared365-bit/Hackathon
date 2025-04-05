@@ -6,10 +6,41 @@
   <title>Greenlight Crystals of Paidenia</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       background: linear-gradient(to bottom, #1a3c1f, #0a1a0d);
+      background-attachment: fixed;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #e4f7e7;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .main-container {
+      max-width: 800px;
+      width: 90%;
+      margin: 2rem auto;
+    }
+    .game-box {
+      background-color: #064e3b;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .answer-input {
+      background-color: rgba(220, 252, 231, 0.9);
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      width: 100%;
+      margin-top: 1rem;
+      color: #0f172a;
+      border: none;
+      font-size: 1.1rem;
     }
     .sprite {
       position: absolute;
@@ -27,144 +58,116 @@
       pointer-events: none;
       top: 0;
       left: 0;
-      z-index: 999;
+      z-index: 999; 
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-submit {
+      background-color: #10b981;
+      color: #0f172a;
+    }
+    .btn-submit:hover {
+      background-color: #059669;
+    }
+    .btn-hint {
+      background-color: #fcd34d;
+      color: #0f172a;
+    }
+    .btn-hint:hover {
+      background-color: #fbbf24;
     }
   </style>
 </head>
-<body class="p-6">
-  <div class="max-w-4xl mx-auto bg-green-900 rounded-2xl shadow-lg p-6">
-    <h1 class="text-3xl font-bold text-green-200 mb-4">🌿 Greenlight Crystals of Paidenia 🌿</h1>
-    <p class="mb-6">Protect the magical forest by solving science flashcards, math challenges, and spelling riddles! Each correct answer restores the power of the Greenlight Crystals.</p>
+<body>
+  <div class="main-container">
+    <div class="game-box">
+      <h1 class="text-3xl font-bold text-green-200 mb-4 text-center">🌿 Greenlight Crystals of Paidenia 🌿</h1>
+      <p class="text-center mb-6">Protect the magical forest by solving science flashcards, math challenges, and spelling riddles! Each correct answer restores the power of the Greenlight Crystals.</p>
 
-    <div class="mb-4">
-      <label for="gradeLevel" class="block text-sm font-bold mb-2">Choose Grade Level:</label>
-      <select id="gradeLevel" class="w-full p-2 rounded text-black">
-        <option value="all">All Grades</option>
-        <option value="elementary">Elementary</option>
-        <option value="middle">Middle</option>
-        <option value="high">High School</option>
-      </select>
+      <div class="mb-4">
+        <label for="gradeLevel" class="block text-sm font-bold mb-2">Choose Grade Level:</label>
+        <select id="gradeLevel" class="w-full p-2 rounded text-black bg-green-100">
+          <option value="all">All Grades</option>
+          <option value="elementary">Elementary</option>
+          <option value="middle">Middle</option>
+          <option value="high">High School</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="subjectCategory" class="block text-sm font-bold mb-2">Choose Subject:</label>
+        <select id="subjectCategory" class="w-full p-2 rounded text-black bg-green-100">
+          <option value="all">All Subjects</option>
+          <option value="science">Science</option>
+          <option value="math">Math</option>
+          <option value="spelling">Spelling</option>
+        </select>
+      </div>
+
+      <div id="questionBox" class="bg-green-800 rounded-xl p-4 mb-4">
+        <p id="question" class="text-xl font-semibold"></p>
+        <input id="answerInput" class="answer-input" type="text" placeholder="Type your answer here...">
+      </div>
+
+      <div class="flex justify-between items-center">
+        <button onclick="submitAnswer()" class="btn btn-submit">Submit</button>
+        <button onclick="showHint()" class="btn btn-hint">Hint</button>
+        <p class="text-xl font-bold">Score: <span id="score">0</span></p>
+      </div>
     </div>
-
-    <div class="mb-4">
-      <label for="subjectCategory" class="block text-sm font-bold mb-2">Choose Subject:</label>
-      <select id="subjectCategory" class="w-full p-2 rounded text-black">
-        <option value="all">All Subjects</option>
-        <option value="science">Science</option>
-        <option value="math">Math</option>
-        <option value="spelling">Spelling</option>
-      </select>
-    </div>
-
-    <div id="questionBox" class="bg-green-800 rounded-xl p-4 mb-4">
-      <p id="question" class="text-xl font-semibold"></p>
-      <input id="answerInput" class="mt-2 p-2 w-full rounded bg-green-100 text-black" type="text" placeholder="Type your answer here...">
-    </div>
-
-    <div class="flex justify-between items-center">
-      <button onclick="submitAnswer()" class="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded">Submit</button>
-      <button onclick="showHint()" class="bg-yellow-300 text-black font-bold py-2 px-4 rounded">Hint</button>
-      <p>Score: <span id="score">0</span></p>
-    </div>
-
-    <canvas id="confettiCanvas" class="confetti"></canvas>
-
-    <img src="sprite1.png" class="sprite" style="top: 10%; left: 5%;">
-    <img src="sprite2.png" class="sprite" style="top: 60%; right: 5%;">
   </div>
 
-  <script>
-    const questions = [
-      { grade: 'elementary', type: 'science', question: 'What gas do plants breathe in to make food?', answer: 'carbon dioxide', hint: 'It starts with C and is in the air.' },
-      { grade: 'elementary', type: 'math', question: 'What is 7 + 8?', answer: '15', hint: 'It is greater than 10, less than 20.' },
-      { grade: 'middle', type: 'spelling', question: 'Type the correct spelling: "enviroment"', answer: 'environment', hint: 'There is an N after the O.' },
-      { grade: 'elementary', type: 'math', question: 'Write the number: twelve', answer: '12', hint: 'It comes after 11.' },
-      { grade: 'high', type: 'science', question: 'What is the chemical symbol for water?', answer: 'h2o', hint: 'Two hydrogen, one oxygen.' },
-    ];
+  <canvas id="confettiCanvas" class="confetti"></canvas>
 
-    let currentQuestion = {};
+  <!-- Crystals added near the bottom -->
+  <img src="/HACKATHON/Assets/crystal.png" id="crystal1" class="sprite" style="bottom: 10%; left: 10%;">
+  <img src="/HACKATHON/Assets/crystal.png" id="crystal2" class="sprite" style="bottom: 10%; left: 45%;">
+  <img src="/HACKATHON/Assets/crystal.png" id="crystal3" class="sprite" style="bottom: 10%; left: 80%;">
+
+  <script>
+    let crystalsRemaining = 3;
+    let bestScore = 0;
     let score = 0;
 
-    document.getElementById('gradeLevel').addEventListener('change', loadQuestion);
-    document.getElementById('subjectCategory').addEventListener('change', loadQuestion);
+    const questions = [
+      // Your existing questions here...
+    ];
 
-    function loadQuestion() {
-      const grade = document.getElementById('gradeLevel').value;
-      const subject = document.getElementById('subjectCategory').value;
-
-      let filtered = questions;
-      if (grade !== 'all') {
-        filtered = filtered.filter(q => q.grade === grade);
+    function submitAnswer() {
+      const userAnswer = document.getElementById("answerInput").value.toLowerCase();
+      const correctAnswer = questions[0].answer.toLowerCase();  // Adjust logic for the current question
+      if (userAnswer === correctAnswer) {
+        score++;
+        document.getElementById("score").innerText = score;
+        // Move to next question or add correct answer logic here
+      } else {
+        if (crystalsRemaining > 0) {
+          document.getElementById(`crystal${crystalsRemaining}`).src = "/HACKATHON/Assets/crystal-broken.png";  // Assuming you have a broken crystal image
+          crystalsRemaining--;
+        }
+        if (crystalsRemaining === 0) {
+          alert(`Game Over! Your best score: ${bestScore}`);
+          // Reset or end game logic here
+        }
       }
-      if (subject !== 'all') {
-        filtered = filtered.filter(q => q.type === subject);
-      }
-
-      if (filtered.length === 0) {
-        document.getElementById('question').innerText = 'No questions available for this selection.';
-        return;
-      }
-
-      currentQuestion = filtered[Math.floor(Math.random() * filtered.length)];
-      document.getElementById('question').innerText = currentQuestion.question;
-      document.getElementById('answerInput').value = '';
     }
 
     function showHint() {
-      alert(currentQuestion.hint);
+      alert(questions[0].hint);  // Adjust to show the hint for the current question
     }
 
-    function submitAnswer() {
-      const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
-      if (userAnswer === currentQuestion.answer.toLowerCase()) {
-        score++;
-        document.getElementById('score').innerText = score;
-        confettiBurst();
-        loadQuestion();
-      } else {
-        alert('Not quite right. Try again!');
+    // Logic to save the best score and handle more game functionalities
+    function updateBestScore() {
+      if (score > bestScore) {
+        bestScore = score;
       }
     }
-
-    function confettiBurst() {
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      let confetti = [];
-      for (let i = 0; i < 100; i++) {
-        confetti.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
-          r: Math.random() * 6 + 4,
-          d: Math.random() * 100 + 10,
-          color: `hsl(${Math.random() * 360}, 100%, 70%)`
-        });
-      }
-
-      let frame = 0;
-      function drawConfetti() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < confetti.length; i++) {
-          const c = confetti[i];
-          ctx.beginPath();
-          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-          ctx.fillStyle = c.color;
-          ctx.fill();
-          c.y += Math.cos(c.d + frame / 10) + 2;
-          if (c.y > canvas.height) {
-            c.y = -10;
-            c.x = Math.random() * canvas.width;
-          }
-        }
-        frame++;
-        if (frame < 100) requestAnimationFrame(drawConfetti);
-      }
-      drawConfetti();
-    }
-
-    window.onload = loadQuestion;
   </script>
 </body>
 </html>
+
