@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIDENIA - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #1a3d2a, #0a1a0d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+
+        .container {
+            background-color: #2d5a3c;
+            width: 80%;
+            max-width: 800px;
+            min-height: 400px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            background-color: #234930;
+            color: white;
+        }
+
+        .hamburger {
+            width: 30px;
+            height: 22px;
+            position: relative;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 3px;
+            width: 100%;
+            background: white;
+            border-radius: 3px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2),
+        .hamburger span:nth-child(3) {
+            top: 9px;
+        }
+
+        .hamburger span:nth-child(4) {
+            top: 18px;
+        }
+
+        .hamburger.open span:nth-child(1) {
+            top: 9px;
+            width: 0%;
+            left: 50%;
+        }
+
+        .hamburger.open span:nth-child(2) {
+            transform: rotate(45deg);
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+
+        .hamburger.open span:nth-child(4) {
+            top: 9px;
+            width: 0%;
+            left: 50%;
+        }
+
+        .menu {
+            position: absolute;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #1d3e2c;
+            transition: left 0.3s ease;
+            z-index: 100;
+            padding-top: 70px;
+        }
+
+        .menu.open {
+            left: 0;
+        }
+
+        .menu ul {
+            list-style: none;
+        }
+
+        .menu ul li {
+            padding: 15px 20px;
+            border-bottom: 1px solid #2a5a3c;
+        }
+
+        .menu ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+        }
+
+        .menu ul li:hover {
+            background-color: #2a5a3c;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 99;
+        }
+
+        .overlay.open {
+            display: block;
+        }
+
+        .content {
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .signup-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #234930;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: white;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #1a3d2a;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        button.submit-btn {
+            width: 75%;
+            padding: 12px;
+            background-color: #1a3d2a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin-top: 20px;
+        }
+
+        button.submit-btn:hover {
+            background-color: #2d5a3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-button {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .home-button:hover {
+            text-decoration: underline;
+        }
+
+        .sprite {
+            position: absolute;
+            width: 100px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="menu">
+            <ul>
+                <li><a href="front-page.html">Home</a></li>
+                <li><a href="#">Sign Up</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+        <div class="header">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <h2 style="margin-bottom: 0;">PAIDENIA</h2>
+        </div>
+        <div class="content">
+            <h1>Sign Up</h1>
+            <div class="signup-form">
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                </form>
+                <a href="front-page.html" class="home-button">Return to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.querySelector('.menu');
+            const overlay = document.querySelector('.overlay');
+
+            hamburger.addEventListener('click', function () {
+                hamburger.classList.toggle('open');
+                menu.classList.toggle('open');
+                overlay.classList.toggle('open');
+            });
+
+            overlay.addEventListener('click', function () {
+                hamburger.classList.remove('open');
+                menu.classList.remove('open');
+                overlay.classList.remove('open');
+            });
+
+            const form = document.getElementById('signupForm');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+               
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+               
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match!');
+                    return;
+                }
+               
+                // Here you would typically send the form data to your server
+                alert('Account created successfully!');
+                form.reset();
+            });
+        });
+    </script>
+    <img src="/HACKATHON/Assets/crystal.png" class="sprite" style="top: 10%; left: 5%;">
+
+    <img src="/HACKATHON/Assets/crystal.png" class="sprite" style="top: 60%; right: 5%;">
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+body {
+    background: linear-gradient(to bottom, #1a3d2a, #0a1a0d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 30px 0;
+}
+
+.scroll {
+    position: relative;
+    width: 1250px; 
+    max-width: 200vw;
+   
+}
+
+
+.scroll-img {
+    margin-top: 0;
+    width: 100%;
+    display: block;
+}
+
+.text {
+    position: absolute;
+    top:  100px;   
+    left: 130px;
+    right: 130px;
+    bottom: 120px;
+    text-align: center;
+    color: #3e2c16;
+    font-weight: bold;
+    font-family: 'Charm', cursive;
+    font-size: 25px;
+    line-height: 1.5;
+    padding: 5px;
+
+}
+.title {
+    background-color: #789d79;
+    padding-left: 200px;
+    padding-right: 200px;
+    display: flex;
+    align-self: center;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-family: 'Imperial Script';
+    font-size: 45px;
+    color: rgb(25, 55, 25);
+}
+
+body {
+    background: linear-gradient(to bottom, #368158, #21592b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+
+
+
+.playNow {
+    margin-top: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.button {
+    width: 220px;
+    height: 70px;
+    font-size: 22px;
+    font-family: Cambria, Georgia, serif;
+    background-color: #C79A75;
+    color: #4d2e1d;
+    border-radius: 5px;
+    padding: 10px;
+    border: 2px solid #a48063;
+}
+
+.button:hover {
+    background-color: #2d5a3c;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: rgb(171, 202, 171);
+    border: none;
+}
